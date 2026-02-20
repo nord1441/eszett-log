@@ -12,11 +12,14 @@ interface AdminSettingsProps {
   onSettingsChange: (settings: SiteSettings) => void
 }
 
+type FontSize = 'small' | 'medium' | 'large'
+
 export function AdminSettings({ user, onSettingsChange }: AdminSettingsProps) {
   const navigate = useNavigate()
 
   const [siteTitle, setSiteTitle] = useState('')
   const [defaultTheme, setDefaultTheme] = useState<'light' | 'dark'>('light')
+  const [defaultFontSize, setDefaultFontSize] = useState<FontSize>('medium')
   const [settingsMsg, setSettingsMsg] = useState('')
 
   const [currentPassword, setCurrentPassword] = useState('')
@@ -32,6 +35,7 @@ export function AdminSettings({ user, onSettingsChange }: AdminSettingsProps) {
     fetchSettings().then((s) => {
       setSiteTitle(s.siteTitle)
       setDefaultTheme(s.defaultTheme)
+      setDefaultFontSize(s.defaultFontSize)
     })
   }, [user, navigate])
 
@@ -39,7 +43,7 @@ export function AdminSettings({ user, onSettingsChange }: AdminSettingsProps) {
     e.preventDefault()
     setSettingsMsg('')
     try {
-      const updated = await updateSettings({ siteTitle, defaultTheme })
+      const updated = await updateSettings({ siteTitle, defaultTheme, defaultFontSize })
       onSettingsChange(updated)
       setSettingsMsg('saved')
     } catch (err) {
@@ -98,6 +102,21 @@ export function AdminSettings({ user, onSettingsChange }: AdminSettingsProps) {
             >
               dark
             </button>
+          </div>
+        </div>
+        <div className="editor__field">
+          <label>default font size</label>
+          <div className="admin-settings__theme-select">
+            {(['small', 'medium', 'large'] as FontSize[]).map((size) => (
+              <button
+                key={size}
+                type="button"
+                className={`btn btn--theme${defaultFontSize === size ? ' btn--theme-active' : ''}`}
+                onClick={() => setDefaultFontSize(size)}
+              >
+                {size}
+              </button>
+            ))}
           </div>
         </div>
         <div className="admin-settings__actions">

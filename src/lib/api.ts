@@ -130,6 +130,7 @@ export async function login(
 export interface SiteSettings {
   siteTitle: string
   defaultTheme: 'light' | 'dark'
+  defaultFontSize: 'small' | 'medium' | 'large'
 }
 
 export async function fetchSettings(): Promise<SiteSettings> {

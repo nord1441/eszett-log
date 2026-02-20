@@ -12,11 +12,19 @@ const USERS_FILE = path.join(__dirname, '..', 'data', 'users.json')
 interface Settings {
   siteTitle: string
   defaultTheme: 'light' | 'dark'
+  defaultFontSize: 'small' | 'medium' | 'large'
 }
 
-const DEFAULT_SETTINGS: Settings = {
-  siteTitle: 'eszett-log',
-  defaultTheme: 'light',
+function getEnvDefaults(): Settings {
+  const theme = process.env.DEFAULT_THEME
+  const fontSize = process.env.DEFAULT_FONT_SIZE
+  const siteTitle = process.env.SITE_TITLE
+  return {
+    siteTitle: siteTitle || 'eszett-log',
+    defaultTheme: theme === 'dark' ? 'dark' : 'light',
+    defaultFontSize:
+      fontSize === 'small' ? 'small' : fontSize === 'large' ? 'large' : 'medium',
+  }
 }
 
 function ensureDataDir() {
@@ -27,12 +35,12 @@ function ensureDataDir() {
 }
 
 function getSettings(): Settings {
+  const defaults = getEnvDefaults()
   ensureDataDir()
   if (!fs.existsSync(SETTINGS_FILE)) {
-    fs.writeFileSync(SETTINGS_FILE, JSON.stringify(DEFAULT_SETTINGS, null, 2))
-    return { ...DEFAULT_SETTINGS }
+    return { ...defaults }
   }
-  return { ...DEFAULT_SETTINGS, ...JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf-8')) }
+  return { ...defaults, ...JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf-8')) }
 }
 
 function saveSettings(settings: Settings) {
@@ -54,11 +62,14 @@ export function settingsRouter(
   // Protected: update settings
   router.put('/', authenticateToken, (req: AuthRequest, res: Response) => {
     const current = getSettings()
-    const { siteTitle, defaultTheme } = req.body
+    const { siteTitle, defaultTheme, defaultFontSize } = req.body
 
     if (siteTitle !== undefined) current.siteTitle = String(siteTitle)
     if (defaultTheme === 'light' || defaultTheme === 'dark') {
       current.defaultTheme = defaultTheme
+    }
+    if (defaultFontSize === 'small' || defaultFontSize === 'medium' || defaultFontSize === 'large') {
+      current.defaultFontSize = defaultFontSize
     }
 
     saveSettings(current)

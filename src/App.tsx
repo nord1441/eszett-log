@@ -19,55 +19,65 @@ const FONT_SIZES: Record<FontSize, number> = {
   large: 20,
 }
 
-function getInitialTheme(): Theme {
+function getSavedTheme(): Theme | null {
   const saved = localStorage.getItem('theme') as Theme | null
-  if (saved) return saved
-  return window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light'
+  if (saved === 'light' || saved === 'dark') return saved
+  return null
 }
 
-function getInitialFontSize(): FontSize {
+function getSavedFontSize(): FontSize | null {
   const saved = localStorage.getItem('fontSize') as FontSize | null
-  return saved && saved in FONT_SIZES ? saved : 'medium'
+  if (saved && saved in FONT_SIZES) return saved
+  return null
 }
 
 export function App() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme)
-  const [fontSize, setFontSize] = useState<FontSize>(getInitialFontSize)
+  const [theme, setTheme] = useState<Theme>(getSavedTheme() ?? 'light')
+  const [fontSize, setFontSize] = useState<FontSize>(getSavedFontSize() ?? 'medium')
   const [user, setUser] = useState<string | null>(null)
   const [siteTitle, setSiteTitle] = useState('eszett-log')
 
+  // Apply theme to DOM (no localStorage write here)
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
   }, [theme])
 
+  // Apply font size to DOM (no localStorage write here)
   useEffect(() => {
     document.documentElement.style.fontSize = `${FONT_SIZES[fontSize]}px`
-    localStorage.setItem('fontSize', fontSize)
   }, [fontSize])
 
+  // Load auth + server settings on mount
   useEffect(() => {
     checkAuth().then((res) => {
       if (res) setUser(res.username)
     })
     fetchSettings().then((s) => {
       setSiteTitle(s.siteTitle)
-      if (!localStorage.getItem('theme')) {
+      // Only apply server defaults when user hasn't explicitly chosen
+      if (!getSavedTheme()) {
         setTheme(s.defaultTheme)
+      }
+      if (!getSavedFontSize()) {
+        setFontSize(s.defaultFontSize)
       }
     }).catch(() => {})
   }, [])
 
   const toggleTheme = useCallback(() => {
-    setTheme((t) => (t === 'light' ? 'dark' : 'light'))
+    setTheme((t) => {
+      const next = t === 'light' ? 'dark' : 'light'
+      localStorage.setItem('theme', next)
+      return next
+    })
   }, [])
 
   const cycleFontSize = useCallback(() => {
-    setFontSize((s) =>
-      s === 'small' ? 'medium' : s === 'medium' ? 'large' : 'small'
-    )
+    setFontSize((s) => {
+      const next = s === 'small' ? 'medium' : s === 'medium' ? 'large' : 'small'
+      localStorage.setItem('fontSize', next)
+      return next
+    })
   }, [])
 
   const handleLogin = useCallback((username: string, token: string) => {
