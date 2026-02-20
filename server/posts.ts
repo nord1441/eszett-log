@@ -36,7 +36,12 @@ function parsePost(filename: string): Post | null {
       title: (data.title as string) || slug,
       date: (data.date as string) || '',
       tags: (data.tags as string[]) || [],
-      excerpt: (data.excerpt as string) || content.slice(0, 160).replace(/\n/g, ' '),
+      excerpt:
+        (data.excerpt as string) ||
+        content
+          .replace(/!\[[^\]]*\]\([^)]*\)/g, '[image]')
+          .slice(0, 160)
+          .replace(/\n/g, ' '),
       content,
     }
   } catch {
