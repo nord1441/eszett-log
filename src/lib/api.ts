@@ -68,6 +68,22 @@ export async function updatePost(
   return res.json()
 }
 
+export async function uploadPost(
+  filename: string,
+  raw: string
+): Promise<{ slug: string }> {
+  const res = await fetch(`${BASE}/posts/upload`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ filename, raw }),
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.error || 'failed to upload post')
+  }
+  return res.json()
+}
+
 export async function deletePost(slug: string): Promise<void> {
   const res = await fetch(`${BASE}/posts/${slug}`, {
     method: 'DELETE',

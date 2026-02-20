@@ -87,6 +87,44 @@ export function postsRouter(auth: RequestHandler): Router {
     res.json(post)
   })
 
+  // POST /api/posts/upload - upload markdown file (auth required)
+  router.post('/upload', auth, (req: Request, res: Response) => {
+    ensurePostsDir()
+    const { filename, raw } = req.body
+    if (!filename || !raw) {
+      res.status(400).json({ error: 'filename and raw content are required' })
+      return
+    }
+
+    const slug = filename.replace(/\.md$/, '').replace(/[^a-zA-Z0-9_-]/g, '-')
+    const filepath = path.join(POSTS_DIR, `${slug}.md`)
+    if (fs.existsSync(filepath)) {
+      res.status(409).json({ error: 'post already exists' })
+      return
+    }
+
+    // Validate that it parses correctly
+    const { data, content } = matter(raw)
+    if (!content.trim()) {
+      res.status(400).json({ error: 'file has no content' })
+      return
+    }
+
+    // If no frontmatter title, use slug
+    if (!data.title) {
+      const withTitle = matter.stringify(content, {
+        title: slug,
+        date: new Date().toISOString().split('T')[0],
+        ...data,
+      })
+      fs.writeFileSync(filepath, withTitle)
+    } else {
+      fs.writeFileSync(filepath, raw)
+    }
+
+    res.status(201).json({ slug })
+  })
+
   // POST /api/posts - create post (auth required)
   router.post('/', auth, (req: Request, res: Response) => {
     ensurePostsDir()
