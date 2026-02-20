@@ -78,55 +78,48 @@ a:hover {
 /* scroll indicator */
 .scroll-indicator {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 100;
   pointer-events: none;
 }
 
-.scroll-indicator__bar {
-  height: 100%;
+.scroll-indicator__track {
+  position: relative;
+  width: 3px;
+  height: 60px;
+  background: var(--border);
+}
+
+.scroll-indicator__dot {
+  position: absolute;
+  left: 50%;
+  width: 7px;
+  height: 7px;
   background: var(--accent);
-  transform-origin: left;
-  transform: scaleX(0);
-  will-change: transform;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: top;
 }
 
 /* page transition */
-.page-transition {
-  will-change: opacity, transform;
-}
-
 .page-transition--enter {
-  animation: page-enter 0.3s ease-out both;
+  animation: page-enter 0.2s linear both;
 }
 
 .page-transition--exit {
-  animation: page-exit 0.15s ease-in both;
+  animation: page-exit 0.12s linear both;
 }
 
 @keyframes page-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes page-exit {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 
 /* layout */

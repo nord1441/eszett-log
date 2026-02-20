@@ -24,13 +24,11 @@ export function PageTransition({ children }: PageTransitionProps) {
         setDisplayChildren(children)
         setPhase('enter')
         window.scrollTo(0, 0)
-      }, 150)
+      }, 120)
       return () => clearTimeout(timer)
     }
   }, [phase, children])
 
-  // Update children immediately when phase is enter and children change
-  // (e.g., data loading within the same route)
   useEffect(() => {
     if (phase === 'enter') {
       setDisplayChildren(children)

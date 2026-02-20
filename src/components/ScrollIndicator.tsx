@@ -17,10 +17,12 @@ export function ScrollIndicator() {
 
   return (
     <div className="scroll-indicator" aria-hidden="true">
-      <div
-        className="scroll-indicator__bar"
-        style={{ transform: `scaleX(${progress})` }}
-      />
+      <div className="scroll-indicator__track">
+        <div
+          className="scroll-indicator__dot"
+          style={{ top: `${progress * 100}%` }}
+        />
+      </div>
     </div>
   )
 }
