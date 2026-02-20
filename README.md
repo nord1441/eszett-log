@@ -1,0 +1,172 @@
+# eszett-log
+
+Markdown ベースのミニマルなブログ SPA。React フロントエンドと Express バックエンドで構成され、記事・画像・設定をすべてファイルシステムに保存する。データベース不要。
+
+## 主な機能
+
+- Markdown 記事の作成・編集・削除
+- Markdown ファイルのアップロード（画像参照の自動解決付き）
+- 画像アップロードとインライン表示
+- JWT ベースの認証
+- 管理者設定画面（サイトタイトル・デフォルトテーマ・デフォルトフォントサイズ・パスワード変更）
+- ライト / ダークテーマ切り替え
+- フォントサイズ切り替え（small / medium / large）
+
+## 実行方法
+
+### 必要なもの
+
+- Node.js 18 以上
+
+### 開発サーバー
+
+```bash
+npm install
+npm run dev
+```
+
+フロントエンド（Vite）が `http://localhost:5173` で、バックエンドが `http://localhost:3001` で起動する。Vite の開発プロキシにより、フロントエンドからの `/api` リクエストはバックエンドに自動転送される。
+
+### プロダクションビルド
+
+```bash
+npm run build
+npm start
+```
+
+`npm run build` はテスト実行 → クライアントビルド → サーバーコンパイルの順に実行される。`npm start` でビルド済みサーバーが起動し、静的ファイルの配信もサーバーが行う。
+
+### テスト
+
+```bash
+npm test            # 全テスト実行
+npm run test:watch  # ウォッチモード
+```
+
+### 初期ログイン
+
+初回起動時にデフォルトの管理者ユーザーが自動作成される。
+
+- **ユーザー名**: `admin`
+- **パスワード**: `admin`
+
+ログイン後、管理者設定画面（ヘッダーの `settings` リンク）からパスワードを変更できる。
+
+## 環境変数
+
+| 変数名 | 説明 | デフォルト値 | 値の例 |
+|---|---|---|---|
+| `PORT` | サーバーのリッスンポート | `3001` | `8080` |
+| `JWT_SECRET` | JWT トークンの署名に使用する秘密鍵 | `eszett-log-secret-change-in-production` | `my-super-secret-key` |
+| `SITE_TITLE` | サイトタイトル（ヘッダー・フッターに表示） | `eszett-log` | `My Blog` |
+| `DEFAULT_THEME` | 新規訪問者のデフォルトテーマ | `light` | `dark` |
+| `DEFAULT_FONT_SIZE` | 新規訪問者のデフォルトフォントサイズ | `medium` | `small`, `large` |
+| `NODE_ENV` | `production` でビルド済み静的ファイルを配信 | ―| `production` |
+
+環境変数は管理者設定画面で保存した値（`data/settings.json`）のフォールバックとして機能する。優先順位: **管理者設定画面 > 環境変数 > ハードコードデフォルト**
+
+`.env` ファイルの例:
+
+```
+PORT=3001
+JWT_SECRET=change-me-in-production
+SITE_TITLE=My Blog
+DEFAULT_THEME=dark
+DEFAULT_FONT_SIZE=medium
+```
+
+## データの永続化
+
+すべてのデータはファイルシステムに保存される。データベースは使用しない。
+
+```
+eszett-log/
+├── posts/              # 記事データ
+│   └── hello-world.md
+├── data/               # アプリケーション設定
+│   ├── users.json
+│   └── settings.json
+└── uploads/            # アップロード画像
+    └── 073a6aac71dd6438.png
+```
+
+### `posts/` — 記事
+
+各記事は 1 つの Markdown ファイルとして保存される。ファイル名（拡張子除く）がスラッグになる。
+
+```markdown
+---
+title: Hello World
+date: '2026-02-20'
+tags:
+  - blog
+  - first
+---
+
+記事の本文をMarkdownで記述する。
+```
+
+- **形式**: YAML フロントマター付き Markdown
+- **ファイル名規則**: `{slug}.md`（英数字・ハイフン・アンダースコア）
+- **フロントマター**: `title`（必須）、`date`（YYYY-MM-DD）、`tags`（文字列配列）、`excerpt`（省略時は本文先頭160文字から自動生成）
+
+### `data/users.json` — ユーザー情報
+
+```json
+[
+  {
+    "username": "admin",
+    "passwordHash": "$2a$10$..."
+  }
+]
+```
+
+- **形式**: JSON 配列
+- **パスワード**: bcrypt でハッシュ化して保存
+- 初回起動時に `admin` / `admin` で自動作成される
+
+### `data/settings.json` — サイト設定
+
+```json
+{
+  "siteTitle": "eszett-log",
+  "defaultTheme": "light",
+  "defaultFontSize": "medium"
+}
+```
+
+- **形式**: JSON オブジェクト
+- 管理者設定画面から変更可能
+- ファイルが存在しない場合は環境変数またはハードコードデフォルトが使用される
+
+### `uploads/` — 画像ファイル
+
+- **ファイル名**: ランダムな16桁の16進数ハッシュ + 元の拡張子（例: `073a6aac71dd6438.png`）
+- **サイズ上限**: 10 MB / ファイル
+- **対応形式**: 画像ファイルのみ（MIME タイプが `image/*` であること）
+- ディレクトリは初回アップロード時に自動作成される
+
+## API エンドポイント
+
+### 公開
+
+| メソッド | パス | 説明 |
+|---|---|---|
+| `GET` | `/api/posts` | 記事一覧（日付降順） |
+| `GET` | `/api/posts/:slug` | 記事取得 |
+| `GET` | `/api/settings` | サイト設定取得 |
+| `GET` | `/api/images/:filename` | 画像取得 |
+| `POST` | `/api/auth/login` | ログイン（JWT トークン取得） |
+| `GET` | `/api/auth/me` | 認証確認 |
+
+### 認証必須
+
+| メソッド | パス | 説明 |
+|---|---|---|
+| `POST` | `/api/posts` | 記事作成 |
+| `PUT` | `/api/posts/:slug` | 記事更新 |
+| `DELETE` | `/api/posts/:slug` | 記事削除 |
+| `POST` | `/api/posts/upload` | Markdown ファイルアップロード |
+| `POST` | `/api/images` | 画像アップロード |
+| `PUT` | `/api/settings` | サイト設定更新 |
+| `PUT` | `/api/settings/password` | パスワード変更 |
