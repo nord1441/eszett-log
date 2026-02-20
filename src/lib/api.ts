@@ -84,6 +84,25 @@ export async function uploadPost(
   return res.json()
 }
 
+export async function uploadImage(
+  file: File
+): Promise<{ url: string; filename: string }> {
+  const formData = new FormData()
+  formData.append('image', file)
+
+  const token = getToken()
+  const res = await fetch(`${BASE}/images`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.error || 'failed to upload image')
+  }
+  return res.json()
+}
+
 export async function deletePost(slug: string): Promise<void> {
   const res = await fetch(`${BASE}/posts/${slug}`, {
     method: 'DELETE',

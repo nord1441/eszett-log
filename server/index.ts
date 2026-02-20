@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { postsRouter } from './posts.js'
+import { imagesRouter } from './images.js'
 import { authRouter, authenticateToken } from './auth.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -14,6 +15,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use('/api/auth', authRouter)
+app.use('/api/images', imagesRouter(authenticateToken))
 app.use('/api/posts', postsRouter(authenticateToken))
 
 // Serve static files in production
