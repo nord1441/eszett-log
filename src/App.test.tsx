@@ -1,3 +1,12 @@
+/**
+ * App コンポーネント テスト
+ *
+ * アプリ全体の初期化・状態管理を検証する。
+ * - デフォルトテーマ: サーバー設定の反映、localStorage優先、マウント時の書き込み防止
+ * - デフォルトフォントサイズ: 同様のサーバー設定反映とlocalStorage優先ロジック
+ * - サイトタイトル: サーバーから取得した値がヘッダーとフッターに表示される
+ * - ヘッダーナビゲーション: ログイン状態に応じたsettingsリンクの表示/非表示
+ */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -36,6 +45,7 @@ function renderApp(initialRoute = '/') {
 }
 
 describe('App default theme from server', () => {
+  // localStorageにテーマが未保存の場合、サーバーのdefaultThemeがDOMに反映されることを確認
   it('applies server default theme when no localStorage', async () => {
     vi.mocked(fetchSettings).mockResolvedValue({
       siteTitle: 'eszett-log',
@@ -48,6 +58,7 @@ describe('App default theme from server', () => {
     })
   })
 
+  // localStorageに保存されたテーマがサーバーのデフォルトより優先されることを確認
   it('respects localStorage theme over server default', async () => {
     localStorage.setItem('theme', 'light')
     vi.mocked(fetchSettings).mockResolvedValue({
@@ -62,6 +73,8 @@ describe('App default theme from server', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')
   })
 
+  // 初回マウント時にlocalStorageへテーマが書き込まれないことを確認
+  // （この書き込みが起きると、新規タブでサーバーデフォルトが無視されるバグの原因になる）
   it('does not write to localStorage on initial mount', async () => {
     vi.mocked(fetchSettings).mockResolvedValue({
       siteTitle: 'eszett-log',
@@ -72,10 +85,10 @@ describe('App default theme from server', () => {
     await waitFor(() => {
       expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
     })
-    // localStorage should NOT have theme set (only set on explicit toggle)
     expect(localStorage.getItem('theme')).toBeNull()
   })
 
+  // ユーザーがテーマトグルボタンをクリックした時のみlocalStorageに書き込まれることを確認
   it('writes to localStorage only when user toggles theme', async () => {
     renderApp()
     await waitFor(() => {
@@ -91,6 +104,7 @@ describe('App default theme from server', () => {
 })
 
 describe('App default font size from server', () => {
+  // localStorageにフォントサイズが未保存の場合、サーバーのdefaultFontSizeが反映されることを確認
   it('applies server default font size when no localStorage', async () => {
     vi.mocked(fetchSettings).mockResolvedValue({
       siteTitle: 'eszett-log',
@@ -103,6 +117,7 @@ describe('App default font size from server', () => {
     })
   })
 
+  // localStorageに保存されたフォントサイズがサーバーのデフォルトより優先されることを確認
   it('respects localStorage font size over server default', async () => {
     localStorage.setItem('fontSize', 'small')
     vi.mocked(fetchSettings).mockResolvedValue({
@@ -117,6 +132,7 @@ describe('App default font size from server', () => {
     expect(document.documentElement.style.fontSize).toBe('16px')
   })
 
+  // 初回マウント時にlocalStorageへフォントサイズが書き込まれないことを確認（テーマと同様のバグ防止）
   it('does not write fontSize to localStorage on initial mount', async () => {
     vi.mocked(fetchSettings).mockResolvedValue({
       siteTitle: 'eszett-log',
@@ -132,6 +148,7 @@ describe('App default font size from server', () => {
 })
 
 describe('App site title from server', () => {
+  // サーバーから取得したサイトタイトルがヘッダーとフッターの両方に表示されることを確認
   it('displays server site title in header and footer', async () => {
     vi.mocked(fetchSettings).mockResolvedValue({
       siteTitle: 'my-custom-blog',
@@ -147,6 +164,7 @@ describe('App site title from server', () => {
 })
 
 describe('Header navigation', () => {
+  // ログイン済みの場合、/adminへのsettingsリンクが表示されることを確認
   it('shows settings link when logged in', async () => {
     vi.mocked(checkAuth).mockResolvedValue({ username: 'admin' })
     renderApp()
@@ -157,6 +175,7 @@ describe('Header navigation', () => {
     expect(settingsLink.closest('a')).toHaveAttribute('href', '/admin')
   })
 
+  // 未ログインの場合、settingsリンクが表示されないことを確認
   it('does not show settings link when logged out', async () => {
     renderApp()
     await waitFor(() => {

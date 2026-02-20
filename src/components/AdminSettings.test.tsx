@@ -1,3 +1,14 @@
+/**
+ * AdminSettings コンポーネント テスト
+ *
+ * 管理者設定画面 (/admin) の表示・操作を検証する。
+ * - 未ログイン時の非表示
+ * - 設定値のロードと表示（サイトタイトル、テーマ、フォントサイズ）
+ * - パスワード変更フォームの存在
+ * - 設定保存時のAPI呼び出しとコールバック
+ * - パスワード不一致バリデーション
+ * - 正常なパスワード変更フロー
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -35,11 +46,13 @@ beforeEach(() => {
 })
 
 describe('AdminSettings', () => {
+  // 未ログイン (user=null) の場合、設定画面が描画されないことを確認
   it('renders nothing when user is null', () => {
     const { container } = renderAdmin(null)
     expect(container.querySelector('.admin-settings')).not.toBeInTheDocument()
   })
 
+  // fetchSettingsで取得した設定値がフォームに正しく表示されることを確認
   it('loads and displays current settings', async () => {
     vi.mocked(fetchSettings).mockResolvedValue({
       siteTitle: 'my-blog',
@@ -52,6 +65,7 @@ describe('AdminSettings', () => {
     })
   })
 
+  // サイトタイトルの入力フィールドが存在し、デフォルト値が表示されることを確認
   it('has site title input field', async () => {
     renderAdmin()
     await waitFor(() => {
@@ -59,6 +73,7 @@ describe('AdminSettings', () => {
     })
   })
 
+  // デフォルトテーマの選択ボタン (light/dark) が存在することを確認
   it('has theme selection buttons (light/dark)', async () => {
     renderAdmin()
     await waitFor(() => {
@@ -67,6 +82,7 @@ describe('AdminSettings', () => {
     expect(screen.getByText('dark')).toBeInTheDocument()
   })
 
+  // デフォルトフォントサイズの選択ボタン (small/medium/large) が存在することを確認
   it('has font size selection buttons (small/medium/large)', async () => {
     renderAdmin()
     await waitFor(() => {
@@ -76,6 +92,7 @@ describe('AdminSettings', () => {
     expect(screen.getByText('large')).toBeInTheDocument()
   })
 
+  // パスワード変更フォームに3つのパスワード入力フィールド（現在・新規・確認）が存在することを確認
   it('has password change form with three fields', async () => {
     renderAdmin()
     await waitFor(() => {
@@ -84,12 +101,12 @@ describe('AdminSettings', () => {
     expect(screen.getByText('current password')).toBeInTheDocument()
     expect(screen.getByText('new password')).toBeInTheDocument()
     expect(screen.getByText('confirm new password')).toBeInTheDocument()
-    // All three have corresponding input fields
     const passwordInputs = screen.getAllByDisplayValue('')
     const passwordFields = passwordInputs.filter((el) => el.getAttribute('type') === 'password')
     expect(passwordFields).toHaveLength(3)
   })
 
+  // saveボタン押下でupdateSettings APIが呼ばれ、onSettingsChangeコールバックに更新後の値が渡されることを確認
   it('saves settings and calls onSettingsChange', async () => {
     const updated = { ...defaultSettings, siteTitle: 'new-title' }
     vi.mocked(updateSettings).mockResolvedValue(updated)
@@ -112,6 +129,7 @@ describe('AdminSettings', () => {
     })
   })
 
+  // 新パスワードと確認パスワードが一致しない場合、APIを呼ばずにエラーメッセージを表示することを確認
   it('shows error when passwords do not match', async () => {
     renderAdmin()
     const user = userEvent.setup()
@@ -122,7 +140,6 @@ describe('AdminSettings', () => {
 
     const inputs = screen.getAllByDisplayValue('')
     const pwInputs = inputs.filter((el) => el.getAttribute('type') === 'password')
-    // pwInputs: [current, new, confirm]
     await user.type(pwInputs[0], 'admin')
     await user.type(pwInputs[1], 'newpass')
     await user.type(pwInputs[2], 'different')
@@ -134,6 +151,7 @@ describe('AdminSettings', () => {
     expect(changePassword).not.toHaveBeenCalled()
   })
 
+  // パスワードが一致する場合、changePassword APIが正しい引数で呼ばれ、成功メッセージが表示されることを確認
   it('calls changePassword API on valid submission', async () => {
     renderAdmin()
     const user = userEvent.setup()
