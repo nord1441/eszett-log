@@ -57,10 +57,10 @@ export function PostView({ user }: PostViewProps) {
         </div>
         {user && (
           <div className="post-view__actions">
-            <Link to={`/edit/${post.slug}`}>
-              <button>edit</button>
-            </Link>
-            <button className="danger" onClick={handleDelete}>
+            <button onClick={() => navigate(`/edit/${post.slug}`)}>
+              edit
+            </button>
+            <button onClick={handleDelete}>
               delete
             </button>
           </div>

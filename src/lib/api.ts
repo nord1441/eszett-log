@@ -127,6 +127,47 @@ export async function login(
   return res.json()
 }
 
+export interface SiteSettings {
+  siteTitle: string
+  defaultTheme: 'light' | 'dark'
+}
+
+export async function fetchSettings(): Promise<SiteSettings> {
+  const res = await fetch(`${BASE}/settings`)
+  if (!res.ok) throw new Error('failed to fetch settings')
+  return res.json()
+}
+
+export async function updateSettings(
+  settings: Partial<SiteSettings>
+): Promise<SiteSettings> {
+  const res = await fetch(`${BASE}/settings`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(settings),
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.error || 'failed to update settings')
+  }
+  return res.json()
+}
+
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string
+): Promise<void> {
+  const res = await fetch(`${BASE}/settings/password`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.error || 'failed to change password')
+  }
+}
+
 export async function checkAuth(): Promise<{ username: string } | null> {
   const token = getToken()
   if (!token) return null

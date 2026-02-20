@@ -9,12 +9,13 @@ interface HeaderProps {
   onCycleFontSize: () => void
   user: string | null
   onLogout: () => void
+  siteTitle: string
 }
 
 const FONT_LABEL = { small: 'A', medium: 'A', large: 'A' } as const
 const FONT_SCALE = { small: 0.55, medium: 0.7, large: 0.85 } as const
 
-export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, user, onLogout }: HeaderProps) {
+export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, user, onLogout, siteTitle }: HeaderProps) {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -74,7 +75,7 @@ export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, user, 
   return (
     <header className="header">
       <Link to="/" className="header__logo">
-        eszett<span>-</span>log
+        {siteTitle}
       </Link>
       <nav className="header__nav">
         {user && (
@@ -94,7 +95,10 @@ export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, user, 
           </>
         )}
         {user ? (
-          <button onClick={onLogout}>{user}</button>
+          <>
+            <Link to="/admin">settings</Link>
+            <button onClick={onLogout}>{user}</button>
+          </>
         ) : (
           <Link to="/login">login</Link>
         )}

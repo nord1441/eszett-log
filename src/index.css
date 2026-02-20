@@ -482,3 +482,54 @@ a:hover {
   font-size: 0.85rem;
   padding: 40px 0;
 }
+
+/* admin settings */
+.admin-settings__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+
+.admin-settings__section {
+  margin-bottom: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-settings__section:last-child {
+  border-bottom: none;
+}
+
+.admin-settings__heading {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--fg-secondary);
+}
+
+.admin-settings__theme-select {
+  display: flex;
+  gap: 8px;
+}
+
+.btn--theme {
+  padding: 6px 16px;
+  font-size: 0.8rem;
+}
+
+.btn--theme-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.admin-settings__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-settings__msg {
+  font-size: 0.75rem;
+  color: var(--fg-secondary);
+}

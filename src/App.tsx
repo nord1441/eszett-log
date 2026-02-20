@@ -7,7 +7,8 @@ import { PostList } from './components/PostList'
 import { PostView } from './components/PostView'
 import { Editor } from './components/Editor'
 import { Login } from './components/Login'
-import { checkAuth } from './lib/api'
+import { AdminSettings } from './components/AdminSettings'
+import { checkAuth, fetchSettings, SiteSettings } from './lib/api'
 
 type Theme = 'light' | 'dark'
 type FontSize = 'small' | 'medium' | 'large'
@@ -35,6 +36,7 @@ export function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme)
   const [fontSize, setFontSize] = useState<FontSize>(getInitialFontSize)
   const [user, setUser] = useState<string | null>(null)
+  const [siteTitle, setSiteTitle] = useState('eszett-log')
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -50,6 +52,12 @@ export function App() {
     checkAuth().then((res) => {
       if (res) setUser(res.username)
     })
+    fetchSettings().then((s) => {
+      setSiteTitle(s.siteTitle)
+      if (!localStorage.getItem('theme')) {
+        setTheme(s.defaultTheme)
+      }
+    }).catch(() => {})
   }, [])
 
   const toggleTheme = useCallback(() => {
@@ -72,6 +80,10 @@ export function App() {
     setUser(null)
   }, [])
 
+  const handleSettingsChange = useCallback((settings: SiteSettings) => {
+    setSiteTitle(settings.siteTitle)
+  }, [])
+
   return (
     <>
       <ScrollIndicator />
@@ -83,6 +95,7 @@ export function App() {
           onCycleFontSize={cycleFontSize}
           user={user}
           onLogout={handleLogout}
+          siteTitle={siteTitle}
         />
         <main>
           <PageTransition>
@@ -104,11 +117,20 @@ export function App() {
                 path="/login"
                 element={<Login onLogin={handleLogin} />}
               />
+              <Route
+                path="/admin"
+                element={
+                  <AdminSettings
+                    user={user}
+                    onSettingsChange={handleSettingsChange}
+                  />
+                }
+              />
             </Routes>
           </PageTransition>
         </main>
         <footer className="footer">
-          eszett-log
+          {siteTitle}
         </footer>
       </div>
     </>
