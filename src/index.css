@@ -78,29 +78,10 @@ a:hover {
 /* scroll indicator */
 .scroll-indicator {
   position: fixed;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 16px;
+  bottom: 16px;
   z-index: 100;
   pointer-events: none;
-}
-
-.scroll-indicator__track {
-  position: relative;
-  width: 3px;
-  height: 60px;
-  background: var(--border);
-}
-
-.scroll-indicator__dot {
-  position: absolute;
-  left: 50%;
-  width: 7px;
-  height: 7px;
-  background: var(--accent);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  will-change: top;
 }
 
 /* page transition */

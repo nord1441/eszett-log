@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react'
 
+const R = 12
+const CENTER = 18
+const DOT_R = 3
+
 export function ScrollIndicator() {
   const [progress, setProgress] = useState(0)
 
@@ -15,14 +19,28 @@ export function ScrollIndicator() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const angle = -Math.PI / 2 + progress * Math.PI * 2
+  const cx = CENTER + R * Math.cos(angle)
+  const cy = CENTER + R * Math.sin(angle)
+
   return (
     <div className="scroll-indicator" aria-hidden="true">
-      <div className="scroll-indicator__track">
-        <div
-          className="scroll-indicator__dot"
-          style={{ top: `${progress * 100}%` }}
+      <svg width={CENTER * 2} height={CENTER * 2}>
+        <circle
+          cx={CENTER}
+          cy={CENTER}
+          r={R}
+          fill="none"
+          stroke="var(--border)"
+          strokeWidth="1"
         />
-      </div>
+        <circle
+          cx={cx}
+          cy={cy}
+          r={DOT_R}
+          fill="var(--accent)"
+        />
+      </svg>
     </div>
   )
 }
