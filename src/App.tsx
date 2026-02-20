@@ -13,9 +13,9 @@ type Theme = 'light' | 'dark'
 type FontSize = 'small' | 'medium' | 'large'
 
 const FONT_SIZES: Record<FontSize, number> = {
-  small: 14,
-  medium: 16,
-  large: 18,
+  small: 16,
+  medium: 18,
+  large: 20,
 }
 
 function getInitialTheme(): Theme {
