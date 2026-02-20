@@ -1,0 +1,6 @@
+apiVersion: v2
+name: eszett-log
+description: A minimal Markdown blog SPA
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

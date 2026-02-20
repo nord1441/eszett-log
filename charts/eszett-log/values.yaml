@@ -1,0 +1,43 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/OWNER/eszett-log
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations: {}
+  host: eszett-log.example.com
+
+env:
+  NODE_ENV: production
+  PORT: "3001"
+  # SITE_TITLE: eszett-log
+  # DEFAULT_THEME: light
+  # DEFAULT_FONT_SIZE: medium
+
+secret:
+  jwtSecret: "change-me-in-production"
+
+persistence:
+  posts:
+    size: 1Gi
+    # storageClass: ""
+  data:
+    size: 256Mi
+  uploads:
+    size: 5Gi
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi

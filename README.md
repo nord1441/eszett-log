@@ -170,3 +170,86 @@ tags:
 | `POST` | `/api/images` | 画像アップロード |
 | `PUT` | `/api/settings` | サイト設定更新 |
 | `PUT` | `/api/settings/password` | パスワード変更 |
+
+## Docker
+
+### docker-compose（推奨）
+
+```bash
+docker compose up -d
+```
+
+`http://localhost:3001` でアクセスできる。データは Docker ボリューム（`posts-data`, `app-data`, `uploads-data`）に永続化される。
+
+環境変数は `docker-compose.yaml` 内の `environment` セクションで設定する。
+
+### 手動ビルド・実行
+
+```bash
+docker build -t eszett-log .
+docker run -d \
+  -p 3001:3001 \
+  -e JWT_SECRET=my-secret \
+  -v eszett-posts:/app/posts \
+  -v eszett-data:/app/data \
+  -v eszett-uploads:/app/uploads \
+  eszett-log
+```
+
+### CI/CD
+
+GitHub Actions (`.github/workflows/docker-build.yaml`) が設定済み。
+
+- `main` ブランチへの push / タグ push で自動ビルドし、GitHub Container Registry (`ghcr.io`) にプッシュ
+- Pull Request ではビルドのみ（プッシュなし）
+- Buildx によるレイヤーキャッシュ対応
+
+## Kubernetes
+
+### 素の Kubernetes マニフェスト
+
+`k8s/` ディレクトリに一式格納されている。
+
+```bash
+# イメージを自身のレジストリに変更
+sed -i 's|ghcr.io/OWNER/eszett-log|ghcr.io/your-org/eszett-log|' k8s/deployment.yaml
+
+# 適用
+kubectl apply -f k8s/
+```
+
+| ファイル | 内容 |
+|---|---|
+| `namespace.yaml` | `eszett-log` Namespace |
+| `secret.yaml` | JWT_SECRET を格納する Secret |
+| `pvc.yaml` | posts (1Gi), data (256Mi), uploads (5Gi) の PVC |
+| `deployment.yaml` | Deployment（liveness/readiness probe 付き） |
+| `service.yaml` | ClusterIP Service (80 → 3001) |
+| `ingress.yaml` | nginx Ingress（ホスト名を要変更） |
+
+### Helm チャート
+
+`charts/eszett-log/` に Helm チャートが格納されている。
+
+```bash
+helm install my-blog charts/eszett-log \
+  --set image.repository=ghcr.io/your-org/eszett-log \
+  --set image.tag=v1.0.0 \
+  --set secret.jwtSecret=my-secret \
+  --set ingress.enabled=true \
+  --set ingress.host=blog.example.com
+```
+
+主な values:
+
+| キー | デフォルト | 説明 |
+|---|---|---|
+| `image.repository` | `ghcr.io/OWNER/eszett-log` | コンテナイメージ |
+| `image.tag` | `latest` | イメージタグ |
+| `secret.jwtSecret` | `change-me-in-production` | JWT 署名鍵 |
+| `ingress.enabled` | `false` | Ingress を作成するか |
+| `ingress.host` | `eszett-log.example.com` | Ingress ホスト名 |
+| `persistence.posts.size` | `1Gi` | 記事ボリュームサイズ |
+| `persistence.data.size` | `256Mi` | 設定ボリュームサイズ |
+| `persistence.uploads.size` | `5Gi` | 画像ボリュームサイズ |
+| `env.*` | - | 任意の環境変数を追加可能 |

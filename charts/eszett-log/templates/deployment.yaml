@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "eszett-log.fullname" . }}
+  labels:
+    {{- include "eszett-log.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "eszett-log.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "eszett-log.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3001
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "eszett-log.fullname" . }}
+                  key: JWT_SECRET
+          volumeMounts:
+            - name: posts
+              mountPath: /app/posts
+            - name: data
+              mountPath: /app/data
+            - name: uploads
+              mountPath: /app/uploads
+          livenessProbe:
+            httpGet:
+              path: /api/settings
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/settings
+              port: 3001
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: posts
+          persistentVolumeClaim:
+            claimName: {{ include "eszett-log.fullname" . }}-posts
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "eszett-log.fullname" . }}-data
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: {{ include "eszett-log.fullname" . }}-uploads

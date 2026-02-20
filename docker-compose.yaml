@@ -1,0 +1,22 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - JWT_SECRET=change-me-in-production
+      # - SITE_TITLE=eszett-log
+      # - DEFAULT_THEME=light
+      # - DEFAULT_FONT_SIZE=medium
+    volumes:
+      - posts-data:/app/posts
+      - app-data:/app/data
+      - uploads-data:/app/uploads
+    restart: unless-stopped
+
+volumes:
+  posts-data:
+  app-data:
+  uploads-data:
