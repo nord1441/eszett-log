@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { Header } from './components/Header'
+import { ScrollIndicator } from './components/ScrollIndicator'
+import { PageTransition } from './components/PageTransition'
 import { PostList } from './components/PostList'
 import { PostView } from './components/PostView'
 import { Editor } from './components/Editor'
@@ -47,37 +49,42 @@ export function App() {
   }, [])
 
   return (
-    <div className="container">
-      <Header
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        user={user}
-        onLogout={handleLogout}
-      />
-      <main>
-        <Routes>
-          <Route path="/" element={<PostList />} />
-          <Route
-            path="/post/:slug"
-            element={<PostView user={user} />}
-          />
-          <Route
-            path="/new"
-            element={<Editor user={user} />}
-          />
-          <Route
-            path="/edit/:slug"
-            element={<Editor user={user} />}
-          />
-          <Route
-            path="/login"
-            element={<Login onLogin={handleLogin} />}
-          />
-        </Routes>
-      </main>
-      <footer className="footer">
-        eszett-log
-      </footer>
-    </div>
+    <>
+      <ScrollIndicator />
+      <div className="container">
+        <Header
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          user={user}
+          onLogout={handleLogout}
+        />
+        <main>
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<PostList />} />
+              <Route
+                path="/post/:slug"
+                element={<PostView user={user} />}
+              />
+              <Route
+                path="/new"
+                element={<Editor user={user} />}
+              />
+              <Route
+                path="/edit/:slug"
+                element={<Editor user={user} />}
+              />
+              <Route
+                path="/login"
+                element={<Login onLogin={handleLogin} />}
+              />
+            </Routes>
+          </PageTransition>
+        </main>
+        <footer className="footer">
+          eszett-log
+        </footer>
+      </div>
+    </>
   )
 }
