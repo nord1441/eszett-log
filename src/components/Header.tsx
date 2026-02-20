@@ -5,11 +5,16 @@ import { uploadPost, uploadImage } from '../lib/api'
 interface HeaderProps {
   theme: 'light' | 'dark'
   onToggleTheme: () => void
+  fontSize: 'small' | 'medium' | 'large'
+  onCycleFontSize: () => void
   user: string | null
   onLogout: () => void
 }
 
-export function Header({ theme, onToggleTheme, user, onLogout }: HeaderProps) {
+const FONT_LABEL = { small: 'A', medium: 'A', large: 'A' } as const
+const FONT_SCALE = { small: 0.55, medium: 0.7, large: 0.85 } as const
+
+export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, user, onLogout }: HeaderProps) {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -93,6 +98,14 @@ export function Header({ theme, onToggleTheme, user, onLogout }: HeaderProps) {
         ) : (
           <Link to="/login">login</Link>
         )}
+        <button
+          className="theme-toggle"
+          onClick={onCycleFontSize}
+          aria-label="Change font size"
+          style={{ fontSize: `${FONT_SCALE[fontSize]}rem` }}
+        >
+          {FONT_LABEL[fontSize]}
+        </button>
         <button
           className="theme-toggle"
           onClick={onToggleTheme}
