@@ -157,7 +157,7 @@ docker run -d \
 | `SITE_TITLE` | サイトタイトル | `eszett-log` |
 | `DEFAULT_THEME` | デフォルトテーマ (`light` / `dark`) | `light` |
 | `DEFAULT_FONT_SIZE` | デフォルトフォントサイズ (`small` / `medium` / `large`) | `medium` |
-| `DEFAULT_FONT_FAMILY` | デフォルトフォント (`doto` / `helvetica-ultra-compressed`) | `doto` |
+| `DEFAULT_FONT_FAMILY` | デフォルトフォント (`doto` / `bebas-neue`) | `doto` |
 
 ---
 
@@ -209,7 +209,7 @@ volumes:
       - SITE_TITLE=My Blog
       - DEFAULT_THEME=dark
       - DEFAULT_FONT_SIZE=large
-      - DEFAULT_FONT_FAMILY=helvetica-ultra-compressed
+      - DEFAULT_FONT_FAMILY=bebas-neue
 ```
 
 または `.env` ファイルを使用する:

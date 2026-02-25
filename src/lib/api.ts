@@ -127,7 +127,7 @@ export async function login(
   return res.json()
 }
 
-export type FontFamily = 'doto' | 'helvetica-ultra-compressed'
+export type FontFamily = 'doto' | 'bebas-neue'
 
 export interface SiteSettings {
   siteTitle: string

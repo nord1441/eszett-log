@@ -9,9 +9,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const SETTINGS_FILE = path.join(__dirname, '..', 'data', 'settings.json')
 const USERS_FILE = path.join(__dirname, '..', 'data', 'users.json')
 
-type FontFamily = 'doto' | 'helvetica-ultra-compressed'
+type FontFamily = 'doto' | 'bebas-neue'
 
-const VALID_FONT_FAMILIES: FontFamily[] = ['doto', 'helvetica-ultra-compressed']
+const VALID_FONT_FAMILIES: FontFamily[] = ['doto', 'bebas-neue']
 
 interface Settings {
   siteTitle: string

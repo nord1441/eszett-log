@@ -21,10 +21,10 @@ const FONT_SIZES: Record<FontSize, number> = {
 
 const FONT_FAMILY_CSS: Record<FontFamily, string> = {
   doto: "'Doto', monospace",
-  'helvetica-ultra-compressed': "'Helvetica Ultra Compressed', 'Arial Narrow', sans-serif",
+  'bebas-neue': "'Bebas Neue', sans-serif",
 }
 
-const VALID_FONT_FAMILIES: FontFamily[] = ['doto', 'helvetica-ultra-compressed']
+const VALID_FONT_FAMILIES: FontFamily[] = ['doto', 'bebas-neue']
 
 function getSavedTheme(): Theme | null {
   const saved = localStorage.getItem('theme') as Theme | null

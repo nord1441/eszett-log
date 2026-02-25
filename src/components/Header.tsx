@@ -19,7 +19,7 @@ const FONT_SCALE = { small: 0.55, medium: 0.7, large: 0.85 } as const
 
 const FONT_FAMILY_LABEL: Record<FontFamily, string> = {
   doto: 'D',
-  'helvetica-ultra-compressed': 'H',
+  'bebas-neue': 'B',
 }
 
 export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, fontFamily, onCycleFontFamily, user, onLogout, siteTitle }: HeaderProps) {

@@ -17,7 +17,7 @@ type FontSize = 'small' | 'medium' | 'large'
 
 const FONT_FAMILY_LABELS: Record<FontFamily, string> = {
   doto: 'Doto',
-  'helvetica-ultra-compressed': 'Helvetica Ultra Compressed',
+  'bebas-neue': 'Bebas Neue',
 }
 
 export function AdminSettings({ user, onSettingsChange }: AdminSettingsProps) {
