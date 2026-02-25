@@ -53,7 +53,7 @@ html {
 }
 
 body {
-  font-family: 'Doto', monospace;
+  font-family: var(--font-family, 'Doto', monospace);
   background-color: var(--bg);
   color: var(--fg);
   line-height: 1.7;
@@ -308,7 +308,7 @@ a:hover {
 }
 
 .post-content code {
-  font-family: 'Doto', monospace;
+  font-family: var(--font-family, 'Doto', monospace);
   background: var(--code-bg);
   padding: 2px 6px;
   font-size: 0.85em;
@@ -373,7 +373,7 @@ a:hover {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   color: var(--fg);
-  font-family: 'Doto', monospace;
+  font-family: var(--font-family, 'Doto', monospace);
   font-size: 0.85rem;
   padding: 8px 12px;
   outline: none;

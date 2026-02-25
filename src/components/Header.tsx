@@ -1,12 +1,14 @@
 import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { uploadPost, uploadImage } from '../lib/api'
+import { uploadPost, uploadImage, FontFamily } from '../lib/api'
 
 interface HeaderProps {
   theme: 'light' | 'dark'
   onToggleTheme: () => void
   fontSize: 'small' | 'medium' | 'large'
   onCycleFontSize: () => void
+  fontFamily: FontFamily
+  onCycleFontFamily: () => void
   user: string | null
   onLogout: () => void
   siteTitle: string
@@ -15,7 +17,12 @@ interface HeaderProps {
 const FONT_LABEL = { small: 'A', medium: 'A', large: 'A' } as const
 const FONT_SCALE = { small: 0.55, medium: 0.7, large: 0.85 } as const
 
-export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, user, onLogout, siteTitle }: HeaderProps) {
+const FONT_FAMILY_LABEL: Record<FontFamily, string> = {
+  doto: 'D',
+  'helvetica-ultra-compressed': 'H',
+}
+
+export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, fontFamily, onCycleFontFamily, user, onLogout, siteTitle }: HeaderProps) {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -102,6 +109,13 @@ export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, user, 
         ) : (
           <Link to="/login">login</Link>
         )}
+        <button
+          className="theme-toggle"
+          onClick={onCycleFontFamily}
+          aria-label="Change font"
+        >
+          {FONT_FAMILY_LABEL[fontFamily]}
+        </button>
         <button
           className="theme-toggle"
           onClick={onCycleFontSize}

@@ -29,6 +29,7 @@ beforeEach(() => {
     siteTitle: 'eszett-log',
     defaultTheme: 'light',
     defaultFontSize: 'medium',
+    defaultFontFamily: 'doto',
   })
 })
 
@@ -51,6 +52,7 @@ describe('App default theme from server', () => {
       siteTitle: 'eszett-log',
       defaultTheme: 'dark',
       defaultFontSize: 'medium',
+      defaultFontFamily: 'doto',
     })
     renderApp()
     await waitFor(() => {
@@ -65,6 +67,7 @@ describe('App default theme from server', () => {
       siteTitle: 'eszett-log',
       defaultTheme: 'dark',
       defaultFontSize: 'medium',
+      defaultFontFamily: 'doto',
     })
     renderApp()
     await waitFor(() => {
@@ -80,6 +83,7 @@ describe('App default theme from server', () => {
       siteTitle: 'eszett-log',
       defaultTheme: 'dark',
       defaultFontSize: 'medium',
+      defaultFontFamily: 'doto',
     })
     renderApp()
     await waitFor(() => {
@@ -110,6 +114,7 @@ describe('App default font size from server', () => {
       siteTitle: 'eszett-log',
       defaultTheme: 'light',
       defaultFontSize: 'large',
+      defaultFontFamily: 'doto',
     })
     renderApp()
     await waitFor(() => {
@@ -124,6 +129,7 @@ describe('App default font size from server', () => {
       siteTitle: 'eszett-log',
       defaultTheme: 'light',
       defaultFontSize: 'large',
+      defaultFontFamily: 'doto',
     })
     renderApp()
     await waitFor(() => {
@@ -138,6 +144,7 @@ describe('App default font size from server', () => {
       siteTitle: 'eszett-log',
       defaultTheme: 'light',
       defaultFontSize: 'large',
+      defaultFontFamily: 'doto',
     })
     renderApp()
     await waitFor(() => {
@@ -154,6 +161,7 @@ describe('App site title from server', () => {
       siteTitle: 'my-custom-blog',
       defaultTheme: 'light',
       defaultFontSize: 'medium',
+      defaultFontFamily: 'doto',
     })
     renderApp()
     await waitFor(() => {

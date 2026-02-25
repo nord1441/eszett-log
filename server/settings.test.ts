@@ -81,6 +81,7 @@ describe('GET /api/settings', () => {
       siteTitle: 'eszett-log',
       defaultTheme: 'light',
       defaultFontSize: 'medium',
+      defaultFontFamily: 'doto',
     })
   })
 

@@ -8,7 +8,7 @@ import { PostView } from './components/PostView'
 import { Editor } from './components/Editor'
 import { Login } from './components/Login'
 import { AdminSettings } from './components/AdminSettings'
-import { checkAuth, fetchSettings, SiteSettings } from './lib/api'
+import { checkAuth, fetchSettings, SiteSettings, FontFamily } from './lib/api'
 
 type Theme = 'light' | 'dark'
 type FontSize = 'small' | 'medium' | 'large'
@@ -18,6 +18,13 @@ const FONT_SIZES: Record<FontSize, number> = {
   medium: 18,
   large: 20,
 }
+
+const FONT_FAMILY_CSS: Record<FontFamily, string> = {
+  doto: "'Doto', monospace",
+  'helvetica-ultra-compressed': "'Helvetica Ultra Compressed', 'Arial Narrow', sans-serif",
+}
+
+const VALID_FONT_FAMILIES: FontFamily[] = ['doto', 'helvetica-ultra-compressed']
 
 function getSavedTheme(): Theme | null {
   const saved = localStorage.getItem('theme') as Theme | null
@@ -31,9 +38,16 @@ function getSavedFontSize(): FontSize | null {
   return null
 }
 
+function getSavedFontFamily(): FontFamily | null {
+  const saved = localStorage.getItem('fontFamily') as FontFamily | null
+  if (saved && VALID_FONT_FAMILIES.includes(saved)) return saved
+  return null
+}
+
 export function App() {
   const [theme, setTheme] = useState<Theme>(getSavedTheme() ?? 'light')
   const [fontSize, setFontSize] = useState<FontSize>(getSavedFontSize() ?? 'medium')
+  const [fontFamily, setFontFamily] = useState<FontFamily>(getSavedFontFamily() ?? 'doto')
   const [user, setUser] = useState<string | null>(null)
   const [siteTitle, setSiteTitle] = useState('eszett-log')
 
@@ -46,6 +60,11 @@ export function App() {
   useEffect(() => {
     document.documentElement.style.fontSize = `${FONT_SIZES[fontSize]}px`
   }, [fontSize])
+
+  // Apply font family to DOM (no localStorage write here)
+  useEffect(() => {
+    document.documentElement.style.setProperty('--font-family', FONT_FAMILY_CSS[fontFamily])
+  }, [fontFamily])
 
   // Load auth + server settings on mount
   useEffect(() => {
@@ -60,6 +79,9 @@ export function App() {
       }
       if (!getSavedFontSize()) {
         setFontSize(s.defaultFontSize)
+      }
+      if (!getSavedFontFamily()) {
+        setFontFamily(s.defaultFontFamily)
       }
     }).catch(() => {})
   }, [])
@@ -76,6 +98,15 @@ export function App() {
     setFontSize((s) => {
       const next = s === 'small' ? 'medium' : s === 'medium' ? 'large' : 'small'
       localStorage.setItem('fontSize', next)
+      return next
+    })
+  }, [])
+
+  const cycleFontFamily = useCallback(() => {
+    setFontFamily((f) => {
+      const idx = VALID_FONT_FAMILIES.indexOf(f)
+      const next = VALID_FONT_FAMILIES[(idx + 1) % VALID_FONT_FAMILIES.length]
+      localStorage.setItem('fontFamily', next)
       return next
     })
   }, [])
@@ -103,6 +134,8 @@ export function App() {
           onToggleTheme={toggleTheme}
           fontSize={fontSize}
           onCycleFontSize={cycleFontSize}
+          fontFamily={fontFamily}
+          onCycleFontFamily={cycleFontFamily}
           user={user}
           onLogout={handleLogout}
           siteTitle={siteTitle}
