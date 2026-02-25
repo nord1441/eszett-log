@@ -52,6 +52,8 @@ npm run test:watch  # ウォッチモード
 
 ログイン後、管理者設定画面（ヘッダーの `settings` リンク）からパスワードを変更できる。
 
+認証の仕組みと JWT_SECRET の設定方法については [docs/jwt-authentication.md](docs/jwt-authentication.md) を参照。
+
 ## 環境変数
 
 | 変数名 | 説明 | デフォルト値 | 値の例 |
