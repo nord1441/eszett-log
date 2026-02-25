@@ -61,6 +61,7 @@ npm run test:watch  # ウォッチモード
 | `SITE_TITLE` | サイトタイトル（ヘッダー・フッターに表示） | `eszett-log` | `My Blog` |
 | `DEFAULT_THEME` | 新規訪問者のデフォルトテーマ | `light` | `dark` |
 | `DEFAULT_FONT_SIZE` | 新規訪問者のデフォルトフォントサイズ | `medium` | `small`, `large` |
+| `DEFAULT_FONT_FAMILY` | 新規訪問者のデフォルトフォント | `doto` | `helvetica-ultra-compressed` |
 | `NODE_ENV` | `production` でビルド済み静的ファイルを配信 | ―| `production` |
 
 環境変数は管理者設定画面で保存した値（`data/settings.json`）のフォールバックとして機能する。優先順位: **管理者設定画面 > 環境変数 > ハードコードデフォルト**
@@ -73,6 +74,7 @@ JWT_SECRET=change-me-in-production
 SITE_TITLE=My Blog
 DEFAULT_THEME=dark
 DEFAULT_FONT_SIZE=medium
+DEFAULT_FONT_FAMILY=doto
 ```
 
 ## データの永続化
@@ -131,7 +133,8 @@ tags:
 {
   "siteTitle": "eszett-log",
   "defaultTheme": "light",
-  "defaultFontSize": "medium"
+  "defaultFontSize": "medium",
+  "defaultFontFamily": "doto"
 }
 ```
 
@@ -203,6 +206,8 @@ GitHub Actions (`.github/workflows/docker-build.yaml`) が設定済み。
 - `main` ブランチへの push / タグ push で自動ビルドし、GitHub Container Registry (`ghcr.io`) にプッシュ
 - Pull Request ではビルドのみ（プッシュなし）
 - Buildx によるレイヤーキャッシュ対応
+
+パイプラインの詳細な設定方法については [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md) を参照。
 
 ## Kubernetes
 
