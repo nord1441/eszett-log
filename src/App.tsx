@@ -69,7 +69,11 @@ export function App() {
   // Load auth + server settings on mount
   useEffect(() => {
     checkAuth().then((res) => {
-      if (res) setUser(res.username)
+      if (res) {
+        setUser(res.username)
+      } else {
+        localStorage.removeItem('token')
+      }
     })
     fetchSettings().then((s) => {
       setSiteTitle(s.siteTitle)
