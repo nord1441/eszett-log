@@ -27,7 +27,7 @@ const defaultSettings = {
   siteTitle: 'eszett-log',
   defaultTheme: 'light' as const,
   defaultFontSize: 'medium' as const,
-  defaultFontFamily: 'doto' as const,
+
 }
 
 function renderAdmin(user: string | null = 'admin') {
@@ -59,7 +59,7 @@ describe('AdminSettings', () => {
       siteTitle: 'my-blog',
       defaultTheme: 'dark',
       defaultFontSize: 'large',
-      defaultFontFamily: 'doto',
+
     })
     renderAdmin()
     await waitFor(() => {

@@ -63,7 +63,6 @@ npm run test:watch  # ウォッチモード
 | `SITE_TITLE` | サイトタイトル（ヘッダー・フッターに表示） | `eszett-log` | `My Blog` |
 | `DEFAULT_THEME` | 新規訪問者のデフォルトテーマ | `light` | `dark` |
 | `DEFAULT_FONT_SIZE` | 新規訪問者のデフォルトフォントサイズ | `medium` | `small`, `large` |
-| `DEFAULT_FONT_FAMILY` | 新規訪問者のデフォルトフォント | `doto` | `bebas-neue` |
 | `NODE_ENV` | `production` でビルド済み静的ファイルを配信 | ―| `production` |
 
 環境変数は管理者設定画面で保存した値（`data/settings.json`）のフォールバックとして機能する。優先順位: **管理者設定画面 > 環境変数 > ハードコードデフォルト**
@@ -76,7 +75,6 @@ JWT_SECRET=change-me-in-production
 SITE_TITLE=My Blog
 DEFAULT_THEME=dark
 DEFAULT_FONT_SIZE=medium
-DEFAULT_FONT_FAMILY=doto
 ```
 
 ## データの永続化
@@ -136,7 +134,6 @@ tags:
   "siteTitle": "eszett-log",
   "defaultTheme": "light",
   "defaultFontSize": "medium",
-  "defaultFontFamily": "doto"
 }
 ```
 
@@ -287,6 +284,5 @@ nomad job run \
 | `site_title` | `eszett-log` | サイトタイトル |
 | `default_theme` | `light` | デフォルトテーマ |
 | `default_font_size` | `medium` | デフォルトフォントサイズ |
-| `default_font_family` | `doto` | デフォルトフォント |
 | `datacenters` | `["dc1"]` | デプロイ先データセンター |
 | `host_data_dir` | `/opt/eszett-log` | ホスト側データディレクトリ |

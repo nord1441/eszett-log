@@ -29,12 +29,6 @@ variable "default_font_size" {
   default     = "medium"
 }
 
-variable "default_font_family" {
-  description = "Default font family for new visitors (doto or bebas-neue)"
-  type        = string
-  default     = "doto"
-}
-
 variable "datacenters" {
   description = "List of datacenters to deploy to"
   type        = list(string)
@@ -144,7 +138,6 @@ job "eszett-log" {
         SITE_TITLE           = var.site_title
         DEFAULT_THEME        = var.default_theme
         DEFAULT_FONT_SIZE    = var.default_font_size
-        DEFAULT_FONT_FAMILY  = var.default_font_family
       }
 
       resources {
