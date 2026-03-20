@@ -74,21 +74,15 @@ job "eszett-log" {
 
     # --- Service registration & health checks ---
     service {
-      name = "eszett-log"
-      port = "http"
+      name     = "eszett-log"
+      provider = "nomad"
+      port     = "http"
 
       tags = [
         "traefik.enable=true",
         "traefik.http.routers.eszett-log.rule=Host(`eszett-log.example.com`)",
       ]
 
-      check {
-        name     = "http-health"
-        type     = "http"
-        path     = "/api/settings"
-        interval = "10s"
-        timeout  = "3s"
-      }
     }
 
     # --- Application task ---
