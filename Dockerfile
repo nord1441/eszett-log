@@ -17,8 +17,6 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/dist-server ./dist-server
 
-VOLUME ["/app/data", "/app/posts", "/app/uploads"]
-
 EXPOSE 3001
 
 CMD ["node", "dist-server/index.js"]
