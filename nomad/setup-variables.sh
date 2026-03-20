@@ -25,13 +25,17 @@ DEFAULT_THEME="light"          # light | dark
 DEFAULT_FONT_SIZE="medium"     # small | medium | large
 DATACENTERS='["dc1"]'
 NAMESPACE="default"
+HOST_VOLUME="eszett-log"
 
 # =============================================================================
 # Apply
 # =============================================================================
 
+echo "==> Creating namespace '${NAMESPACE}'..."
+nomad namespace apply "${NAMESPACE}"
+
 echo "==> Putting Nomad Variables..."
-nomad var put nomad/jobs/eszett-log \
+nomad var put -namespace="${NAMESPACE}" nomad/jobs/eszett-log \
   jwt_secret="${JWT_SECRET}"
 
 echo "==> Running job..."
@@ -42,4 +46,5 @@ nomad job run \
   -var="default_font_size=${DEFAULT_FONT_SIZE}" \
   -var="datacenters=${DATACENTERS}" \
   -var="namespace=${NAMESPACE}" \
+  -var="host_volume=${HOST_VOLUME}" \
   nomad/eszett-log.nomad.hcl

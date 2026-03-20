@@ -34,6 +34,12 @@ variable "namespace" {
   default     = "default"
 }
 
+variable "host_volume" {
+  description = "Name of the host volume to use for persistent data"
+  type        = string
+  default     = "eszett-log"
+}
+
 job "eszett-log" {
   datacenters = var.datacenters
   namespace   = var.namespace
@@ -53,22 +59,10 @@ job "eszett-log" {
       }
     }
 
-    # --- Persistent volumes (host_volume) ---
-    volume "posts" {
+    # --- Persistent volume (single host_volume, split by subpaths) ---
+    volume "storage" {
       type      = "host"
-      source    = "eszett-log-posts"
-      read_only = false
-    }
-
-    volume "data" {
-      type      = "host"
-      source    = "eszett-log-data"
-      read_only = false
-    }
-
-    volume "uploads" {
-      type      = "host"
-      source    = "eszett-log-uploads"
+      source    = var.host_volume
       read_only = false
     }
 
@@ -90,25 +84,17 @@ job "eszett-log" {
       driver = "docker"
 
       config {
-        image = var.image
-        ports = ["http"]
+        image      = var.image
+        ports      = ["http"]
+        entrypoint = ["/bin/sh", "-c"]
+        args = [
+          "mkdir -p /mnt/eszett-log/posts /mnt/eszett-log/data /mnt/eszett-log/uploads && rm -rf /app/posts /app/data /app/uploads && ln -s /mnt/eszett-log/posts /app/posts && ln -s /mnt/eszett-log/data /app/data && ln -s /mnt/eszett-log/uploads /app/uploads && exec node dist-server/index.js",
+        ]
       }
 
       volume_mount {
-        volume      = "posts"
-        destination = "/app/posts"
-        read_only   = false
-      }
-
-      volume_mount {
-        volume      = "data"
-        destination = "/app/data"
-        read_only   = false
-      }
-
-      volume_mount {
-        volume      = "uploads"
-        destination = "/app/uploads"
+        volume      = "storage"
+        destination = "/mnt/eszett-log"
         read_only   = false
       }
 
