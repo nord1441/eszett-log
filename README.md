@@ -260,29 +260,35 @@ helm install my-blog charts/eszett-log \
 
 ### HashiCorp Nomad
 
-`nomad/eszett-log.nomad.hcl` に Nomad ジョブ定義が格納されている。
+`nomad/eszett-log.nomad.hcl` に Nomad ジョブ定義が格納されている。シークレット（JWT_SECRET）は Nomad Variables で管理する。
 
 ```bash
-# Nomad クライアントに host_volume を設定（client 設定ファイルに追記）
+# 1. Nomad クライアントに host_volume を設定（client 設定ファイルに追記）
 # host_volume "eszett-log-posts"   { path = "/opt/eszett-log/posts" }
 # host_volume "eszett-log-data"    { path = "/opt/eszett-log/data" }
 # host_volume "eszett-log-uploads" { path = "/opt/eszett-log/uploads" }
 
-# ジョブ実行
+# 2. シークレットを Nomad Variables に登録
+./nomad/setup-variables.sh --jwt-secret "my-production-secret"
+
+# 3. ジョブ実行
 nomad job run \
   -var="image=ghcr.io/your-org/eszett-log:v1.0.0" \
-  -var="jwt_secret=my-secret" \
   nomad/eszett-log.nomad.hcl
 ```
 
-主な変数:
+主な HCL 変数:
 
 | 変数名 | デフォルト | 説明 |
 |---|---|---|
 | `image` | `ghcr.io/OWNER/eszett-log:latest` | コンテナイメージ |
-| `jwt_secret` | `change-me-in-production` | JWT 署名鍵 |
 | `site_title` | `eszett-log` | サイトタイトル |
 | `default_theme` | `light` | デフォルトテーマ |
 | `default_font_size` | `medium` | デフォルトフォントサイズ |
 | `datacenters` | `["dc1"]` | デプロイ先データセンター |
-| `host_data_dir` | `/opt/eszett-log` | ホスト側データディレクトリ |
+
+Nomad Variables（`nomad/jobs/eszett-log`）:
+
+| キー | 説明 |
+|---|---|
+| `jwt_secret` | JWT 署名鍵 |

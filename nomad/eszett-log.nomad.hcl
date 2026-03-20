@@ -4,13 +4,6 @@ variable "image" {
   default     = "ghcr.io/OWNER/eszett-log:latest"
 }
 
-variable "jwt_secret" {
-  description = "Secret key used for JWT token signing"
-  type        = string
-  default     = "change-me-in-production"
-  sensitive   = true
-}
-
 variable "site_title" {
   description = "Site title displayed in header and footer"
   type        = string
@@ -39,12 +32,6 @@ variable "namespace" {
   description = "Nomad namespace"
   type        = string
   default     = "default"
-}
-
-variable "host_data_dir" {
-  description = "Base directory on the host for persistent data"
-  type        = string
-  default     = "/opt/eszett-log"
 }
 
 job "eszett-log" {
@@ -131,13 +118,23 @@ job "eszett-log" {
         read_only   = false
       }
 
+      # Secrets from Nomad Variables (nomad var put)
+      template {
+        data        = <<-EOT
+          {{ with nomadVar "nomad/jobs/eszett-log" }}
+          JWT_SECRET={{ .jwt_secret }}
+          {{ end }}
+        EOT
+        destination = "${NOMAD_SECRETS_DIR}/env"
+        env         = true
+      }
+
       env {
-        NODE_ENV             = "production"
-        PORT                 = "${NOMAD_PORT_http}"
-        JWT_SECRET           = var.jwt_secret
-        SITE_TITLE           = var.site_title
-        DEFAULT_THEME        = var.default_theme
-        DEFAULT_FONT_SIZE    = var.default_font_size
+        NODE_ENV          = "production"
+        PORT              = "${NOMAD_PORT_http}"
+        SITE_TITLE        = var.site_title
+        DEFAULT_THEME     = var.default_theme
+        DEFAULT_FONT_SIZE = var.default_font_size
       }
 
       resources {
