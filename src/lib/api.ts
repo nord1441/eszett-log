@@ -127,13 +127,10 @@ export async function login(
   return res.json()
 }
 
-export type FontFamily = 'doto' | 'helvetica-ultra-compressed'
-
 export interface SiteSettings {
   siteTitle: string
   defaultTheme: 'light' | 'dark'
   defaultFontSize: 'small' | 'medium' | 'large'
-  defaultFontFamily: FontFamily
 }
 
 export async function fetchSettings(): Promise<SiteSettings> {

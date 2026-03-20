@@ -138,7 +138,6 @@ docker run -d \
   -e SITE_TITLE="My Blog" \
   -e DEFAULT_THEME=dark \
   -e DEFAULT_FONT_SIZE=medium \
-  -e DEFAULT_FONT_FAMILY=doto \
   -v eszett-posts:/app/posts \
   -v eszett-data:/app/data \
   -v eszett-uploads:/app/uploads \
@@ -157,7 +156,6 @@ docker run -d \
 | `SITE_TITLE` | サイトタイトル | `eszett-log` |
 | `DEFAULT_THEME` | デフォルトテーマ (`light` / `dark`) | `light` |
 | `DEFAULT_FONT_SIZE` | デフォルトフォントサイズ (`small` / `medium` / `large`) | `medium` |
-| `DEFAULT_FONT_FAMILY` | デフォルトフォント (`doto` / `helvetica-ultra-compressed`) | `doto` |
 
 ---
 
@@ -184,7 +182,6 @@ services:
       # - SITE_TITLE=eszett-log
       # - DEFAULT_THEME=light
       # - DEFAULT_FONT_SIZE=medium
-      # - DEFAULT_FONT_FAMILY=doto
     volumes:
       - posts-data:/app/posts
       - app-data:/app/data
@@ -209,7 +206,6 @@ volumes:
       - SITE_TITLE=My Blog
       - DEFAULT_THEME=dark
       - DEFAULT_FONT_SIZE=large
-      - DEFAULT_FONT_FAMILY=helvetica-ultra-compressed
 ```
 
 または `.env` ファイルを使用する:
@@ -449,7 +445,6 @@ env:
   SITE_TITLE: "My Blog"
   DEFAULT_THEME: dark
   DEFAULT_FONT_SIZE: medium
-  DEFAULT_FONT_FAMILY: doto
 
 secret:
   jwtSecret: your-production-secret

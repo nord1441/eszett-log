@@ -52,6 +52,8 @@ npm run test:watch  # ウォッチモード
 
 ログイン後、管理者設定画面（ヘッダーの `settings` リンク）からパスワードを変更できる。
 
+認証の仕組みと JWT_SECRET の設定方法については [docs/jwt-authentication.md](docs/jwt-authentication.md) を参照。
+
 ## 環境変数
 
 | 変数名 | 説明 | デフォルト値 | 値の例 |
@@ -61,7 +63,6 @@ npm run test:watch  # ウォッチモード
 | `SITE_TITLE` | サイトタイトル（ヘッダー・フッターに表示） | `eszett-log` | `My Blog` |
 | `DEFAULT_THEME` | 新規訪問者のデフォルトテーマ | `light` | `dark` |
 | `DEFAULT_FONT_SIZE` | 新規訪問者のデフォルトフォントサイズ | `medium` | `small`, `large` |
-| `DEFAULT_FONT_FAMILY` | 新規訪問者のデフォルトフォント | `doto` | `helvetica-ultra-compressed` |
 | `NODE_ENV` | `production` でビルド済み静的ファイルを配信 | ―| `production` |
 
 環境変数は管理者設定画面で保存した値（`data/settings.json`）のフォールバックとして機能する。優先順位: **管理者設定画面 > 環境変数 > ハードコードデフォルト**
@@ -74,7 +75,6 @@ JWT_SECRET=change-me-in-production
 SITE_TITLE=My Blog
 DEFAULT_THEME=dark
 DEFAULT_FONT_SIZE=medium
-DEFAULT_FONT_FAMILY=doto
 ```
 
 ## データの永続化
@@ -134,7 +134,6 @@ tags:
   "siteTitle": "eszett-log",
   "defaultTheme": "light",
   "defaultFontSize": "medium",
-  "defaultFontFamily": "doto"
 }
 ```
 
@@ -258,3 +257,38 @@ helm install my-blog charts/eszett-log \
 | `persistence.data.size` | `256Mi` | 設定ボリュームサイズ |
 | `persistence.uploads.size` | `5Gi` | 画像ボリュームサイズ |
 | `env.*` | - | 任意の環境変数を追加可能 |
+
+### HashiCorp Nomad
+
+`nomad/eszett-log.nomad.hcl` に Nomad ジョブ定義が格納されている。シークレット（JWT_SECRET）は Nomad Variables で管理する。
+
+```bash
+# 1. Nomad クライアントに host_volume を設定（client 設定ファイルに追記）
+# host_volume "eszett-log-posts"   { path = "/opt/eszett-log/posts" }
+# host_volume "eszett-log-data"    { path = "/opt/eszett-log/data" }
+# host_volume "eszett-log-uploads" { path = "/opt/eszett-log/uploads" }
+
+# 2. シークレットを Nomad Variables に登録
+./nomad/setup-variables.sh --jwt-secret "my-production-secret"
+
+# 3. ジョブ実行
+nomad job run \
+  -var="image=ghcr.io/your-org/eszett-log:v1.0.0" \
+  nomad/eszett-log.nomad.hcl
+```
+
+主な HCL 変数:
+
+| 変数名 | デフォルト | 説明 |
+|---|---|---|
+| `image` | `ghcr.io/OWNER/eszett-log:latest` | コンテナイメージ |
+| `site_title` | `eszett-log` | サイトタイトル |
+| `default_theme` | `light` | デフォルトテーマ |
+| `default_font_size` | `medium` | デフォルトフォントサイズ |
+| `datacenters` | `["dc1"]` | デプロイ先データセンター |
+
+Nomad Variables（`nomad/jobs/eszett-log`）:
+
+| キー | 説明 |
+|---|---|
+| `jwt_secret` | JWT 署名鍵 |

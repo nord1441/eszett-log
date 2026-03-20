@@ -9,31 +9,21 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const SETTINGS_FILE = path.join(__dirname, '..', 'data', 'settings.json')
 const USERS_FILE = path.join(__dirname, '..', 'data', 'users.json')
 
-type FontFamily = 'doto' | 'helvetica-ultra-compressed'
-
-const VALID_FONT_FAMILIES: FontFamily[] = ['doto', 'helvetica-ultra-compressed']
-
 interface Settings {
   siteTitle: string
   defaultTheme: 'light' | 'dark'
   defaultFontSize: 'small' | 'medium' | 'large'
-  defaultFontFamily: FontFamily
 }
 
 function getEnvDefaults(): Settings {
   const theme = process.env.DEFAULT_THEME
   const fontSize = process.env.DEFAULT_FONT_SIZE
-  const fontFamily = process.env.DEFAULT_FONT_FAMILY
   const siteTitle = process.env.SITE_TITLE
   return {
     siteTitle: siteTitle || 'eszett-log',
     defaultTheme: theme === 'dark' ? 'dark' : 'light',
     defaultFontSize:
       fontSize === 'small' ? 'small' : fontSize === 'large' ? 'large' : 'medium',
-    defaultFontFamily:
-      VALID_FONT_FAMILIES.includes(fontFamily as FontFamily)
-        ? (fontFamily as FontFamily)
-        : 'doto',
   }
 }
 
@@ -72,7 +62,7 @@ export function settingsRouter(
   // Protected: update settings
   router.put('/', authenticateToken, (req: AuthRequest, res: Response) => {
     const current = getSettings()
-    const { siteTitle, defaultTheme, defaultFontSize, defaultFontFamily } = req.body
+    const { siteTitle, defaultTheme, defaultFontSize } = req.body
 
     if (siteTitle !== undefined) current.siteTitle = String(siteTitle)
     if (defaultTheme === 'light' || defaultTheme === 'dark') {
@@ -80,9 +70,6 @@ export function settingsRouter(
     }
     if (defaultFontSize === 'small' || defaultFontSize === 'medium' || defaultFontSize === 'large') {
       current.defaultFontSize = defaultFontSize
-    }
-    if (VALID_FONT_FAMILIES.includes(defaultFontFamily)) {
-      current.defaultFontFamily = defaultFontFamily
     }
 
     saveSettings(current)

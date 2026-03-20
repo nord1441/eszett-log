@@ -1,14 +1,12 @@
 import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { uploadPost, uploadImage, FontFamily } from '../lib/api'
+import { uploadPost, uploadImage } from '../lib/api'
 
 interface HeaderProps {
   theme: 'light' | 'dark'
   onToggleTheme: () => void
   fontSize: 'small' | 'medium' | 'large'
   onCycleFontSize: () => void
-  fontFamily: FontFamily
-  onCycleFontFamily: () => void
   user: string | null
   onLogout: () => void
   siteTitle: string
@@ -17,12 +15,7 @@ interface HeaderProps {
 const FONT_LABEL = { small: 'A', medium: 'A', large: 'A' } as const
 const FONT_SCALE = { small: 0.55, medium: 0.7, large: 0.85 } as const
 
-const FONT_FAMILY_LABEL: Record<FontFamily, string> = {
-  doto: 'D',
-  'helvetica-ultra-compressed': 'H',
-}
-
-export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, fontFamily, onCycleFontFamily, user, onLogout, siteTitle }: HeaderProps) {
+export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, user, onLogout, siteTitle }: HeaderProps) {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -41,7 +34,6 @@ export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, fontFa
       const mdFile = fileArray.find((f) => f.name.endsWith('.md'))
       const imageFiles = fileArray.filter((f) => f.type.startsWith('image/'))
 
-      // Upload images first and build a name→url map
       const imageMap: Record<string, string> = {}
       for (const img of imageFiles) {
         const result = await uploadImage(img)
@@ -51,9 +43,7 @@ export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, fontFa
       if (mdFile) {
         let raw = await mdFile.text()
 
-        // Replace image references in markdown with uploaded URLs
         for (const [name, url] of Object.entries(imageMap)) {
-          // Match patterns like ![alt](./name), ![alt](name), ![alt](images/name)
           const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
           const pattern = new RegExp(
             `(!\\[[^\\]]*\\]\\()(?:\\.?\\/?)(?:[\\w-]+\\/)*${escaped}(\\))`,
@@ -65,7 +55,6 @@ export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, fontFa
         const result = await uploadPost(mdFile.name, raw)
         navigate(`/post/${result.slug}`)
       } else if (imageFiles.length > 0) {
-        // If only images were selected, copy URLs to clipboard
         const urls = Object.values(imageMap)
         const md = urls.map((url) => `![](${url})`).join('\n')
         await navigator.clipboard.writeText(md)
@@ -109,13 +98,6 @@ export function Header({ theme, onToggleTheme, fontSize, onCycleFontSize, fontFa
         ) : (
           <Link to="/login">login</Link>
         )}
-        <button
-          className="theme-toggle"
-          onClick={onCycleFontFamily}
-          aria-label="Change font"
-        >
-          {FONT_FAMILY_LABEL[fontFamily]}
-        </button>
         <button
           className="theme-toggle"
           onClick={onCycleFontSize}

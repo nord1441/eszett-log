@@ -5,7 +5,6 @@ import {
   updateSettings,
   changePassword,
   SiteSettings,
-  FontFamily,
 } from '../lib/api'
 
 interface AdminSettingsProps {
@@ -15,18 +14,12 @@ interface AdminSettingsProps {
 
 type FontSize = 'small' | 'medium' | 'large'
 
-const FONT_FAMILY_LABELS: Record<FontFamily, string> = {
-  doto: 'Doto',
-  'helvetica-ultra-compressed': 'Helvetica Ultra Compressed',
-}
-
 export function AdminSettings({ user, onSettingsChange }: AdminSettingsProps) {
   const navigate = useNavigate()
 
   const [siteTitle, setSiteTitle] = useState('')
   const [defaultTheme, setDefaultTheme] = useState<'light' | 'dark'>('light')
   const [defaultFontSize, setDefaultFontSize] = useState<FontSize>('medium')
-  const [defaultFontFamily, setDefaultFontFamily] = useState<FontFamily>('doto')
   const [settingsMsg, setSettingsMsg] = useState('')
 
   const [currentPassword, setCurrentPassword] = useState('')
@@ -43,7 +36,6 @@ export function AdminSettings({ user, onSettingsChange }: AdminSettingsProps) {
       setSiteTitle(s.siteTitle)
       setDefaultTheme(s.defaultTheme)
       setDefaultFontSize(s.defaultFontSize)
-      setDefaultFontFamily(s.defaultFontFamily)
     })
   }, [user, navigate])
 
@@ -51,7 +43,7 @@ export function AdminSettings({ user, onSettingsChange }: AdminSettingsProps) {
     e.preventDefault()
     setSettingsMsg('')
     try {
-      const updated = await updateSettings({ siteTitle, defaultTheme, defaultFontSize, defaultFontFamily })
+      const updated = await updateSettings({ siteTitle, defaultTheme, defaultFontSize })
       onSettingsChange(updated)
       setSettingsMsg('saved')
     } catch (err) {
@@ -123,21 +115,6 @@ export function AdminSettings({ user, onSettingsChange }: AdminSettingsProps) {
                 onClick={() => setDefaultFontSize(size)}
               >
                 {size}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="editor__field">
-          <label>default font</label>
-          <div className="admin-settings__theme-select">
-            {(Object.keys(FONT_FAMILY_LABELS) as FontFamily[]).map((key) => (
-              <button
-                key={key}
-                type="button"
-                className={`btn btn--theme${defaultFontFamily === key ? ' btn--theme-active' : ''}`}
-                onClick={() => setDefaultFontFamily(key)}
-              >
-                {FONT_FAMILY_LABELS[key]}
               </button>
             ))}
           </div>
