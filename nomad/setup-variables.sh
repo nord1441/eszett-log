@@ -15,8 +15,6 @@ set -euo pipefail
 # Secrets (Nomad Variables)
 # =============================================================================
 JWT_SECRET="CHANGE_ME"
-GHCR_USERNAME="OWNER"
-GHCR_TOKEN="CHANGE_ME"           # GitHub PAT (read:packages)
 
 # =============================================================================
 # Config (HCL Variables)
@@ -38,9 +36,7 @@ nomad namespace apply "${NAMESPACE}"
 
 echo "==> Putting Nomad Variables..."
 nomad var put -namespace="${NAMESPACE}" nomad/jobs/eszett-log \
-  jwt_secret="${JWT_SECRET}" \
-  ghcr_username="${GHCR_USERNAME}" \
-  ghcr_token="${GHCR_TOKEN}"
+  jwt_secret="${JWT_SECRET}"
 
 echo "==> Running job..."
 nomad job run \

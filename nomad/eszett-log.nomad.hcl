@@ -90,23 +90,12 @@ job "eszett-log" {
         args = [
           "mkdir -p /mnt/eszett-log/posts /mnt/eszett-log/data /mnt/eszett-log/uploads && rm -rf /app/posts /app/data /app/uploads && ln -s /mnt/eszett-log/posts /app/posts && ln -s /mnt/eszett-log/data /app/data && ln -s /mnt/eszett-log/uploads /app/uploads && exec node dist-server/index.js",
         ]
-        auth_config_file = "${NOMAD_SECRETS_DIR}/docker.json"
       }
 
       volume_mount {
         volume      = "storage"
         destination = "/mnt/eszett-log"
         read_only   = false
-      }
-
-      # Docker registry auth (generated from Nomad Variables)
-      template {
-        data        = <<-EOT
-        {{- with nomadVar "nomad/jobs/eszett-log" }}
-        {"auths":{"ghcr.io":{"username":"{{ .ghcr_username }}","password":"{{ .ghcr_token }}"}}}
-        {{- end }}
-        EOT
-        destination = "${NOMAD_SECRETS_DIR}/docker.json"
       }
 
       # Secrets from Nomad Variables (nomad var put)
